@@ -1,22 +1,37 @@
+const fs = require('fs');
 const notes = require('express').Router();
+const path = require('path');
+const uuid = require('../helpers/uuid')
 
 notes.get('/api/notes', (req, res) => {
-    readFromFile('../db/db.json').then((data) => res.json(JSON.parse(data)));
+    fs.readFile('./db/db.json', (err, data)=> {
+        if (err) throw err;
+    res.send(data)});
 });
 
 notes.post('/api/notes', (req, res) => {
-    const { title, text } = req.body;
-    if (req.body) {
-        const newNote = {
-            title,
-            text,
-        };
-        readAndAppend(newNote, '../db/db.json');
+    let newNote = {
+        title: req.body.title,
+        text: req.body.text,
+        id: uuid(),
     }
-});
 
-// notes.delete('/api/notes/:id', (req, res) => {
-//     const deletedNote
-// })
+    fs.readFile('./db/db.json', (err, data) => {
+        if (err) throw err;
+        let noteList = JSON.parse(data);
+        noteList.push(newNote);
+        fs.writeFile('./db/db.json', JSON.stringify(noteList), (err) => {
+            if (err) throw err;
+            res.send;
+        })
+    })
+   
+    }
+);
+
+notes.delete('/api/notes/:id', (req, res) => {
+    console.log('will fix later lol')
+
+})
 
 module.exports = notes;
